@@ -1,8 +1,7 @@
-package main
+package app
 
 import (
 	"encoding/json"
-	"fmt"
 	"io/ioutil"
 	"net/http"
 	"strconv"
@@ -33,7 +32,7 @@ type Course struct {
 }
 
 type API struct {
-	cli *http.Client
+	HTTPClient *http.Client
 }
 
 type TeeTimeResponse struct {
@@ -93,7 +92,7 @@ func (a *API) GetTimes(course Course, date string) ([]*TeeTimeResponse, error) {
 	q.Set("api_key", "no_limits")
 	req.URL.RawQuery = q.Encode()
 
-	resp, err := a.cli.Do(req)
+	resp, err := a.HTTPClient.Do(req)
 	if err != nil {
 		return nil, err
 	}
@@ -104,8 +103,6 @@ func (a *API) GetTimes(course Course, date string) ([]*TeeTimeResponse, error) {
 	if err != nil {
 		return nil, err
 	}
-
-	fmt.Printf("%s %s\n", resp.Status, b)
 
 	times := []*TeeTimeResponse{}
 	if err := json.Unmarshal(b, &times); err != nil {
